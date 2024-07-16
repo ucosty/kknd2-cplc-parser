@@ -1,26 +1,30 @@
-use std::error::Error;
-use std::fmt::Display;
-use std::io::{Read, Seek};
+// kknd2-cplc-parser
+// Copyright (c) 2024 Matthew Costa <ucosty@gmail.com>
+//
+// SPDX-License-Identifier: MIT
 
-use byteorder::ReadBytesExt;
+use std::error::Error;
 use clap::Parser;
 
-use crate::parser::parse_cplc;
-
-mod units;
-mod parser;
+mod creature_library;
+mod cplc;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 #[command(propagate_version = true)]
 struct Cli {
     filename: String,
-}
 
+    #[arg(short, long, default_value = "Creature.klb")]
+    creature_library: String,
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
-    parse_cplc(&cli.filename)?;
+    let creature_library = creature_library::parse(&cli.creature_library)?;
+
+    cplc::parse(&cli.filename, &creature_library)?;
+
     Ok(())
 }

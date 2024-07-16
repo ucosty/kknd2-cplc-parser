@@ -1,3 +1,5 @@
 /target
 *.CPLC
-units.toml
+*.lpc
+*.bin
+Creature.klb
