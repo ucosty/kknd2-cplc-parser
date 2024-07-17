@@ -77,7 +77,7 @@ Entity 7
   ├─ name = Level information
   ├─    x = 1440
   ├─    y = 768
-  └─ data = MapConfiguration(MapConfiguration)
+  └─ data = MapConfiguration(MapConfiguration { ally_funds: 4660, enemy_funds: 51966, player_funds: 1337, build_restrictions: [65535, 65535, 8055, 2046], par_time: 57005, matrix_set: 32776, counter: 49374, counter_function: 1, mission_win_condition: 6, mission_lose_condition: 4, max_tech_level: 3, local_team: 6, local_race: 2, team_colours: [7, 1, 3, 2, 4, 5, 6, 1, 0] })
 ```
 
 ## License

@@ -69,9 +69,6 @@ struct MapConfiguration {
     team_colours: [u16; 9],
 }
 
-// 0x00 - Target Area
-//
-
 fn parse_header<R: Read>(reader: &mut BufReader<R>) -> Result<Header, Box<dyn Error>> {
     Ok(Header {
         file_size: reader.read_u32::<LittleEndian>()?,
@@ -250,7 +247,7 @@ fn parse_cpu_player_information<R: Read + Seek>(
 }
 
 fn parse_team_colours<R: Read>(reader: &mut BufReader<R>) -> Result<[u16; 9], Box<dyn Error>> {
-    let mut team_colours : Vec<u16> = Vec::new();
+    let mut team_colours: Vec<u16> = Vec::new();
     team_colours.resize(9, 0);
     for i in 0..9 {
         team_colours[i] = reader.read_u16::<LittleEndian>()?;
@@ -261,8 +258,10 @@ fn parse_team_colours<R: Read>(reader: &mut BufReader<R>) -> Result<[u16; 9], Bo
     Ok(result)
 }
 
-fn parse_build_restrictions<R: Read>(reader: &mut BufReader<R>) -> Result<[u16; 4], Box<dyn Error>> {
-    let mut build_restrictions : Vec<u16> = Vec::new();
+fn parse_build_restrictions<R: Read>(
+    reader: &mut BufReader<R>,
+) -> Result<[u16; 4], Box<dyn Error>> {
+    let mut build_restrictions: Vec<u16> = Vec::new();
     build_restrictions.resize(4, 0);
     for i in 0..4 {
         build_restrictions[i] = reader.read_u16::<LittleEndian>()?;
@@ -270,7 +269,6 @@ fn parse_build_restrictions<R: Read>(reader: &mut BufReader<R>) -> Result<[u16; 
 
     Ok(<[u16; 4]>::try_from(build_restrictions.as_slice())?)
 }
-
 
 fn parse_map_configuration<R: Read + Seek>(
     reader: &mut BufReader<R>,
