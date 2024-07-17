@@ -52,7 +52,22 @@ struct ScrollStart {}
 struct Ripple {}
 
 #[derive(Debug)]
-struct MapConfiguration {}
+struct MapConfiguration {
+    ally_funds: u16,
+    enemy_funds: u16,
+    player_funds: u16,
+    build_restrictions: [u16; 4],
+    par_time: u16,
+    matrix_set: u16,
+    counter: u32,
+    counter_function: u16,
+    mission_win_condition: u16,
+    mission_lose_condition: u16,
+    max_tech_level: u16,
+    local_team: u16,
+    local_race: u16,
+    team_colours: [u16; 9],
+}
 
 // 0x00 - Target Area
 //
@@ -234,6 +249,29 @@ fn parse_cpu_player_information<R: Read + Seek>(
     ))
 }
 
+fn parse_team_colours<R: Read>(reader: &mut BufReader<R>) -> Result<[u16; 9], Box<dyn Error>> {
+    let mut team_colours : Vec<u16> = Vec::new();
+    team_colours.resize(9, 0);
+    for i in 0..9 {
+        team_colours[i] = reader.read_u16::<LittleEndian>()?;
+    }
+
+    let result = <[u16; 9]>::try_from(team_colours.as_slice())?;
+
+    Ok(result)
+}
+
+fn parse_build_restrictions<R: Read>(reader: &mut BufReader<R>) -> Result<[u16; 4], Box<dyn Error>> {
+    let mut build_restrictions : Vec<u16> = Vec::new();
+    build_restrictions.resize(4, 0);
+    for i in 0..4 {
+        build_restrictions[i] = reader.read_u16::<LittleEndian>()?;
+    }
+
+    Ok(<[u16; 4]>::try_from(build_restrictions.as_slice())?)
+}
+
+
 fn parse_map_configuration<R: Read + Seek>(
     reader: &mut BufReader<R>,
 ) -> Result<(BasicInformation, MapConfiguration), Box<dyn Error>> {
@@ -249,6 +287,25 @@ fn parse_map_configuration<R: Read + Seek>(
     let list_3 = reader.read_u32::<LittleEndian>()?;
     let list_4 = reader.read_u32::<LittleEndian>()?;
 
+    reader.seek_relative(20)?;
+
+    let team_colours = parse_team_colours(&mut *reader)?;
+
+    let local_team = reader.read_u16::<LittleEndian>()?;
+    let local_race = reader.read_u16::<LittleEndian>()?;
+    let counter = reader.read_u32::<LittleEndian>()?;
+    let build_restrictions = parse_build_restrictions(&mut *reader)?;
+    let ally_funds = reader.read_u16::<LittleEndian>()?;
+    let enemy_funds = reader.read_u16::<LittleEndian>()?;
+    let player_funds = reader.read_u16::<LittleEndian>()?;
+    let mission_lose_condition = reader.read_u16::<LittleEndian>()?;
+    let mission_win_condition = reader.read_u16::<LittleEndian>()?;
+    let max_tech_level = reader.read_u16::<LittleEndian>()?;
+    reader.seek_relative(4)?;
+    let counter_function = reader.read_u16::<LittleEndian>()?;
+    let matrix_set = reader.read_u16::<LittleEndian>()?;
+    let par_time = reader.read_u16::<LittleEndian>()?;
+
     Ok((
         BasicInformation {
             x,
@@ -258,7 +315,22 @@ fn parse_map_configuration<R: Read + Seek>(
             list_3,
             list_4,
         },
-        MapConfiguration {},
+        MapConfiguration {
+            ally_funds,
+            enemy_funds,
+            player_funds,
+            build_restrictions,
+            par_time,
+            matrix_set,
+            counter,
+            counter_function,
+            mission_win_condition,
+            mission_lose_condition,
+            max_tech_level,
+            local_team,
+            local_race,
+            team_colours,
+        },
     ))
 }
 
